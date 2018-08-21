@@ -1,0 +1,95 @@
+/*  
+ *  colors
+ */
+:root {
+  /* site colors */
+  --white: #ffffff;
+  --black: #212121;
+  --navy: #0F2940;
+  --light-grey: #465B66;
+  --light-grey-hover: #60727C;
+  --blue: #00758C;
+  --slate-blue: #30434D;
+  --dark-blue: #1C3340;
+  --light-blue: #8AC8E9;
+  --red: #D53E4F;
+  --dark-red: #9E0142;
+  --dark-text: #153872;
+  --link: #2553A0;
+  --bad: #D5080F;
+  --good: #68B828;
+  --nav-shadow: 0px 3px 15px 0px rgba(0,0,0,0.1);
+  --footer-shadow: 0px 3px 50px 0px rgba(43,45,66,0.4);
+}
+
+/*  
+ *  tags
+ */
+
+.datepicker table tr td.active.active, 
+.datepicker table tr td.active.highlighted.active, 
+.datepicker table tr td.active.highlighted:active, 
+.datepicker table tr td.active:active {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.datepicker table tr td.active.active:hover {
+  background-color: var(--dark-red);
+  border-color: var(--dark-red);
+}
+
+.datepicker table tr td span.active.active, 
+.datepicker table tr td span.active.disabled.active, 
+.datepicker table tr td span.active.disabled:active, 
+.datepicker table tr td span.active.disabled:hover.active, 
+.datepicker table tr td span.active.disabled:hover:active, 
+.datepicker table tr td span.active:active, 
+.datepicker table tr td span.active:hover.active, 
+.datepicker table tr td span.active:hover:active {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.datepicker table tr td span.active.active:hover {
+  background-color: var(--dark-red);
+  border-color: var(--dark-red);
+}
+ 
+.nav-tabs-custom>.nav-tabs>li.active {
+  border-top-color: var(--red);
+}
+
+.pagination>.active>a, 
+.pagination>.active>a:focus, 
+.pagination>.active>a:hover, 
+.pagination>.active>span, 
+.pagination>.active>span:focus, 
+.pagination>.active>span:hover {
+  background-color: var(--red)!important;
+  border-color: var(--red)!important;
+}
+
+.skin-blue .main-header .logo,
+.skin-blue .main-header .navbar {
+  background-color: var(--navy);
+  color: var(--navy);
+  border-bottom: 0 solid transparent;
+}
+
+.skin-blue .main-header .logo:hover {
+  background-color: var(--navy);
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+  background-color: var(--navy);
+}
+
+.skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+  background-color: var(--light-grey);
+}
+
+.skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+  background-color: var(--light-grey-hover);
+  border-left-color: var(--red);
+}
