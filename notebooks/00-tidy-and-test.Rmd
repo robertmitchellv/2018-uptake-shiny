@@ -1,0 +1,182 @@
+---
+title: "Sample analysis"
+output: html_notebook
+---
+
+# Packages
+
+```{r}
+library(tidyverse)
+library(sf)
+library(plotly)
+library(leaflet)
+```
+
+## Functions
+
+```{r}
+`%<>%` <- magrittr::`%<>%`
+```
+
+## API tokens
+
+```{r}
+mapbox <- "https://api.mapbox.com/styles/v1/robertmitchellv/cipr7teic001aekm72dnempan/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoicm9iZXJ0bWl0Y2hlbGx2IiwiYSI6ImNpcHI2cXFnbTA3MHRmbG5jNWJzMzJtaDQifQ.vtvgLokcc_EJgnWVPL4vXw"
+```
+
+# Data
+
+## Read the affordable housing data
+
+```{r}
+housing <- read_csv("../data/raw/Affordable_Rental_Housing_Developments.csv") %>%
+  janitor::clean_names()
+```
+
+__Check for problems__
+```{r}
+problems(housing)
+```
+
+## Read the geo data
+
+```{r}
+geo_data <- read_sf(
+  dsn = "../data/geo/chicago_boundaries_community_areas.geojson",
+  layer = "chicago_boundaries_community_areas"
+)
+```
+
+# Tidy
+
+## Get summary totals
+
+* Before joining data, we need totals for the map, e.g., how many veterans projects in a particular community?
+  + There are 24 different property types; most of it is senior and family, maybe we can simplify?
+  + There are 146 different developpers with the top 17 all developping and managing 5+ affordable housing properties
+
+### Look for categories
+
+```{r}
+housing %>% 
+  count(property_type) 
+```
+
+> This is subjective, but it is also important to remember that _all_ classification or categorization is subjective--it's a critical choice and important to remember when working with data. Being clear or upfront about this kind of work, I feel, is good. I will even comment code like this with why I'm doing it this way in case I need to update or rework later.
+
+```{r}
+# We'll use these list with dplyr to assign a new variable
+artist <- c(
+  "Artist Housing", "Artist Live/Work Space"
+)
+
+disabled <- c(
+  "People with Disabilities" 
+)
+
+family <- c(
+  "Multfamily", "Multifamily", "Multifamily/Artists", "Multigfamily",
+  "Mutifamily", "Inter-generational" 
+)
+
+senior <- c(
+  "Senior", "Senior HUD 202", "Senior LGBTQ", "Seniors"
+)
+
+supportive <- c(
+  "65+/Supportive", "Disabled/Homeless", "Supportive", "Supportive Housing",
+  "Supportive/HIV/AIDS", "Supportive/Kinship Families", "Supportive/Males 18-24yrs.",
+  "Supportive/Teenage Moms", "Supportive/Veterans", "Supportive/Youth/Kinship Families"
+)
+```
+
+__Using `dplyr` we will check if the `property_type` is in the named list; if it is, then we'll assign the string _after_ the `~` to the variable--I usually also try to catch errors by assigning anything left over to `"error"` to see what went wrong__
+```{r}
+housing %<>%
+  mutate(property_category = case_when(
+    property_type %in% artist ~ "Artist",
+    property_type %in% disabled ~ "Disabled",
+    property_type %in% family ~ "Family",
+    property_type %in% senior ~ "Senior",
+    property_type %in% supportive ~ "Supportive",
+    property_type == "ARO" ~ "ARO", # what is ARO??
+    TRUE ~ "error"
+  )) 
+```
+
+### Totals for `property_category`
+
+```{r}
+housing %<>%
+  group_by(property_category) %>%
+  mutate(n_by_property_category = n())
+```
+
+### Totals for `management_company` for each community
+
+* Group by the company and by the community
+* Create a variable with the count of that grouping
+* Organize by community name
+* Remove the grouping
+* Group by the community only
+* Create a variable with the count of that grouping
+* Remove the grouping
+
+```{r}
+housing %<>% 
+  group_by(management_company, community_area_name) %>% 
+  mutate(n_by_management_company = n()) %>%
+  arrange(community_area_name) %>%
+  dplyr::ungroup() %>%
+  group_by(community_area_name) %>%
+  mutate(n_affordable_housing = n()) %>%
+  dplyr::ungroup()
+```
+
+## Join
+
+* Join data (on community area name)
+  + `geo_data` all caps; use `stringr::str_to_title()` to correct
+  + `housing` variable name too long; shorte to `community` to match `geo_data`
+
+```{r}
+geo_data %<>%
+  mutate(community = str_to_title(community))
+```
+
+```{r}
+housing %<>%
+  rename(community = community_area_name)
+```
+
+__Join and make sure the data returned still has the simple features class attribute__
+```{r}
+data <- left_join(geo_data, housing, by = "community")
+"sf" %in% class(data)
+```
+
+# Create maps
+
+```{r}
+icons <- awesomeIcons(
+  icon = "fa-home",
+  library = "fa",
+  markerColor = "orange",
+  iconColor = "white"
+)
+
+leaflet(data) %>%
+  addTiles(mapbox) %>%
+  addPolygons(
+    fillColor = "grey",
+    weigh = 1.5,
+    fillOpacity = 0.7,
+    smoothFactor = 0.5,
+    color = "white",
+    label = ~community) %>%
+  addAwesomeMarkers(
+    icon = icons,
+    lng = ~data$longitude, lat = ~data$latitude)
+  
+```
+
