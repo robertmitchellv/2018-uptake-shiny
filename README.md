@@ -62,7 +62,7 @@ For MacOS Sierra, see [these](https://stat.ethz.ch/pipermail/r-sig-mac/2017-June
 
 For Unix-alikes, `GDAL (>= 2.0.0)`, `GEOS (>= 3.3.0)` and `Proj.4 (>= 4.8.0)` are required.
 
-### Ubuntu
+__Ubuntu__
 
 To install the dependencies on Ubuntu, either add [ubuntugis-unstable](http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu/) to the package repositories:
 
@@ -74,7 +74,7 @@ sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev
 
 or install dependencies from source; see e.g. an older travis config file for hints.
 
-###Fedora
+__Fedora__
 
 The following command installs all required dependencies:
 
@@ -82,7 +82,7 @@ The following command installs all required dependencies:
 sudo dnf install gdal-devel proj-devel proj-epsg proj-nad geos-devel udunits2-devel
 ```
 
-### Arch
+__Arch__
 
 Get gdal, proj and geos from the main repos and udunits from the AUR:
 
@@ -91,7 +91,7 @@ pacman -S gdal proj geos
 pacaur/yaourt/whatever -S udunits
 ```
 
-### Other
+__Other__
 
 To install on Debian, the [rocker geospatial](https://github.com/rocker-org/geospatial) Dockerfiles may be helpful. Ubuntu Dockerfiles are found [here](https://github.com/r-spatial/sf/tree/master/inst/docker).
 
